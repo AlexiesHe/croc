@@ -21,7 +21,7 @@ int main() {
     uart_write_flush();
     *reg8(GPIO_BASE_ADDR, GPIO_DIR_REG_OFFSET) = 0x0F; // lowest four as outputs
     *reg8(GPIO_BASE_ADDR, GPIO_OUT_REG_OFFSET) = 0x0A; // ready output pattern
-    *reg8(GPIO_BASE_ADDR, GPIO_EN_REG_OFFSET)  = 0xFF;  // enable lowest eight
+    *reg8(GPIO_BASE_ADDR, GPIO_EN_REG_OFFSET)  = 0xFF; // enable lowest eight
     asm volatile (
         "nop; nop; nop; nop; nop;"
     ); // wait a few cycles to give GPIO signal time to propagate
@@ -33,8 +33,13 @@ int main() {
     printf("GPIO (expect 0x50): %x\n", *reg8(GPIO_BASE_ADDR, GPIO_IN_REG_OFFSET));
     uart_write_flush();
 
-    // TODO : Define USER_ROM_BASE_ADDR in config.h, read eight 32-bit words from
-    // the ROM and print them using %x
+    // TODO : Define USER_ROM_BASE_ADDR in config.h, read eight 32-bit words from the ROM and print them using %x
+    for (uint8_t i = 0; i < 8; i++)
+    {
+        printf("ROM (%x): %x\n", i, *reg32(USER_ROM_BASE_ADDR + i * 4, 0));
+        uart_write_flush();
+    }
+    
 
     return 1;
 }

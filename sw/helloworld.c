@@ -36,7 +36,7 @@ int main() {
     // TODO : Define USER_ROM_BASE_ADDR in config.h, read eight 32-bit words from the ROM and print them using %x
     for (uint8_t i = 0; i < 8; i++)
     {
-        printf("ROM (%x): %x\n", i, *reg32(USER_ROM_BASE_ADDR + i * 4, 0));
+        printf("ROM (%x): %x\n", i, *reg32(USER_ROM_BASE_ADDR, i * 4));
         uart_write_flush();
     }
     

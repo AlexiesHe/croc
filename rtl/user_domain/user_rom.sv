@@ -89,13 +89,13 @@ module user_rom #(
     if(req_q) begin
       if(~we_q) begin
         case(word_addr)
-          3'h0: rsp_data = 32'h6c417865;
-          3'h1: rsp_data = 32'h65695f73;
-          3'h2: rsp_data = 32'h65487327;
-          3'h3: rsp_data = 32'h43206f72;
-          3'h4: rsp_data = 32'h20635341;
-          3'h5: rsp_data = 32'h4349000a;
-          3'h6: rsp_data = 32'h0;
+          3'h0: rsp_data = 32'h78656c41;
+          3'h1: rsp_data = 32'h5f736569;
+          3'h2: rsp_data = 32'h73276548;
+          3'h3: rsp_data = 32'h6f724320;
+          3'h4: rsp_data = 32'h53412063;
+          3'h5: rsp_data = 32'h43204349;
+          3'h6: rsp_data = 32'h00706968;
           3'h7: rsp_data = 32'h0;
           default: rsp_data = 32'h0;
         endcase

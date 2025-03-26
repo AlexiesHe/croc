@@ -80,19 +80,23 @@ module user_rom #(
   // Assign the response data
   // TODO 2 : Modify the code such that the ROM will contain (up to) 32 ASCII chars
   // hold in your initials in the form: "JD&JD's ASIC\0"
-  logic [1:0] word_addr;
+  logic [2:0] word_addr;
   always_comb begin
     rsp_data  = '0;
     rsp_err   = '0;
-    word_addr = addr_q[3:2];
+    word_addr = addr_q[4:2];
 
     if(req_q) begin
       if(~we_q) begin
         case(word_addr)
-          2'h0: rsp_data = 32'h4A44264A;
-          2'h1: rsp_data = 32'h44277320;
-          2'h2: rsp_data = 32'h41534943;
-          2'h3: rsp_data = 32'h00000000;
+          3'h0: rsp_data = 32'h6c417865;
+          3'h1: rsp_data = 32'h65695f73;
+          3'h2: rsp_data = 32'h65487327;
+          3'h3: rsp_data = 32'h43206f72;
+          3'h4: rsp_data = 32'h20635341;
+          3'h5: rsp_data = 32'h4349000a;
+          3'h6: rsp_data = 32'h0;
+          3'h7: rsp_data = 32'h0;
           default: rsp_data = 32'h0;
         endcase
       end else begin

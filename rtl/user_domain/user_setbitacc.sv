@@ -30,7 +30,7 @@ module user_setbitacc #(
   logic req_d, req_q;
   logic we_d, we_q;
   logic [ObiCfg.AddrWidth-1:0] addr_d, addr_q;
-  logic [ObiCfg.IdWidth-1:0] id_d, id_q;
+  logic [ObiCfg.IdWidth-1:0]   id_d, id_q;
   logic [ObiCfg.DataWidth-1:0] wdata_d, wdata_q;
 
   // Signals used to create the response
@@ -39,7 +39,7 @@ module user_setbitacc #(
 
   // Internal signals/registers
   logic [15:0] set_bits_accumulator_d, set_bits_accumulator_q; // Holding the accumulated bitcount
-  logic [15:0] wdata_cnt; // Olding the bitcount of the request wdata
+  logic [15:0] wdata_cnt; // Holding the bitcount of the request wdata
   
   // Note to avoid writing trivial always_ff statements we can use this macro defined in registers.svh 
   `FF(req_q, req_d, '0);
@@ -49,17 +49,21 @@ module user_setbitacc #(
   `FF(addr_q , addr_d , '0);
   `FF(set_bits_accumulator_q, set_bits_accumulator_d, '0);
 
-  assign req_d = obi_req_i.req;
-  assign id_d = obi_req_i.a.aid;
-  assign we_d = obi_req_i.a.we;
-  assign addr_d = obi_req_i.a.addr;
+  assign req_d   = obi_req_i.req;
+  assign id_d    = obi_req_i.a.aid;
+  assign we_d    = obi_req_i.a.we;
+  assign addr_d  = obi_req_i.a.addr;
   assign wdata_d = obi_req_i.a.wdata;
 
 
   // TODO 2: Build wdata_cnt, which counts the number of bits set in the previous request's data.
-  always_comb
-  begin
-      wdata_cnt = 1;
+  always_comb begin
+      wdata_cnt = 0;
+      if (we_q) begin
+        for (int i=0; i<ObiCfg.DataWidth; i++) begin
+          wdata_cnt += wdata_q[i];
+        end
+      end
   end
 
   // Assign the response data
@@ -74,14 +78,22 @@ module user_setbitacc #(
 
     if(req_q) begin
       case(word_addr)
-        3'h1: begin
+        3'h0: begin //* Reset Accumulator
+          if (we_q) begin
+            set_bits_accumulator_d = '0;
+          end
+          else begin
+            rsp_err = '1;
+          end
+        end
+        3'h1: begin //* Push value to Accumulator
           if(we_q) begin
             set_bits_accumulator_d = set_bits_accumulator_q + wdata_cnt;
           end else begin
             rsp_err = '1;
           end
         end
-        3'h2: begin
+        3'h2: begin //* Read Accumulator
           if(we_q) begin
             rsp_err = '1;
           end else begin
@@ -95,12 +107,12 @@ module user_setbitacc #(
 
   // Wire the response
   // A channel
-  assign obi_rsp_o.gnt = obi_req_i.req;
+  assign obi_rsp_o.gnt          = obi_req_i.req;
   // R channel:
-  assign obi_rsp_o.rvalid = req_q;
-  assign obi_rsp_o.r.rdata = rsp_data;
-  assign obi_rsp_o.r.rid = id_q;
-  assign obi_rsp_o.r.err = rsp_err;
+  assign obi_rsp_o.rvalid       = req_q;
+  assign obi_rsp_o.r.rdata      = rsp_data;
+  assign obi_rsp_o.r.rid        = id_q;
+  assign obi_rsp_o.r.err        = rsp_err;
   assign obi_rsp_o.r.r_optional = '0;
 
 endmodule

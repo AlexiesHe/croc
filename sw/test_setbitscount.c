@@ -69,9 +69,23 @@ int main() {
     *reg32(USER_SETBITCOUNT_BASE_ADDR, 0x0) = 0x0;
 
     // Accumulate
+    // * Method 1:(58 cycles)
+    /*
     for(int i = 0; i < 8; i++) {
         *reg32(USER_SETBITCOUNT_BASE_ADDR, 0x4) = array[i];
-    }
+     }
+    */
+
+    // * Method 2:(25 cycles)
+    *reg32(USER_SETBITCOUNT_BASE_ADDR, 0x4) = array[0];
+    *reg32(USER_SETBITCOUNT_BASE_ADDR, 0x4) = array[1];
+    *reg32(USER_SETBITCOUNT_BASE_ADDR, 0x4) = array[2];
+    *reg32(USER_SETBITCOUNT_BASE_ADDR, 0x4) = array[3];
+    *reg32(USER_SETBITCOUNT_BASE_ADDR, 0x4) = array[4];
+    *reg32(USER_SETBITCOUNT_BASE_ADDR, 0x4) = array[5];
+    *reg32(USER_SETBITCOUNT_BASE_ADDR, 0x4) = array[6];
+    *reg32(USER_SETBITCOUNT_BASE_ADDR, 0x4) = array[7];
+
     // Read result
     uint32_t result_b = *reg32(USER_SETBITCOUNT_BASE_ADDR, 0x8);
 
